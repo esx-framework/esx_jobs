@@ -1,9 +1,9 @@
-# esx_jobs
+<h1 align='center'>[ESX] Jobs</a></h1><p align='center'><b><a href='https://discord.esx-framework.org/'>Discord</a> - <a href='https://documentation.esx-framework.org/legacy/installation'>Documentation</a></b></h5>
 
 ## Requirements
 
-- [esx_addonaccount](https://github.com/ESX-Org/esx_addonaccount)
-- [esx_skin](https://github.com/ESX-Org/esx_skin)
+- [esx_addonaccount](https://github.com/esx-framework/esx_addonaccount)
+- [esx_skin](https://github.com/esx-framework/esx_core/tree/main/%5Bcore%5D/esx_skin)
 
 ### Features
 
@@ -39,7 +39,7 @@ CloakRoom = {
 
 esx_jobs - jobs
 
-Copyright (C) 2015-2022 Jérémie N'gadi
+Copyright (C) 2015-2023 Jérémie N'gadi
 
 This program Is free software: you can redistribute it And/Or modify it under the terms Of the GNU General Public License As published by the Free Software Foundation, either version 3 Of the License, Or (at your option) any later version.
 
