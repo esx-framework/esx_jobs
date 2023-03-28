@@ -1,12 +1,12 @@
 Locales['fi'] = {
   -- Global menus
-  ['cloakroom'] = 'vaatelokero',
+  ['cloakroom'] = 'Pukulokero',
   ['cloak_change'] = 'paina ~INPUT_PICKUP~ vaihtaaksesi vaatteet',
   ['citizen_wear'] = 'siviilivaatteet',
   ['job_wear'] = 'työvaatteet',
   ['bank_deposit_returned'] = 'vakuuden summa €%s palautettiin sinulle.',
   ['bank_deposit_taken'] = 'vakuuden summa ~r~€%s otettiin sinulta.',
-  ['caution_afford'] = 'you cannot afford the caution of $%s',
+  ['caution_afford'] = 'Sinulla ei ole varaa tähän $%s',
   ['foot_work'] = 'sinun täytyy olla jalan, jotta voit työskennellä',
   ['next_point'] = 'mene seuraavaan pisteeseen kun olet valmis täällä',
   ['not_your_vehicle'] = 'tämä ei ole sinun ajoneuvo tai et ole sen kuski',
@@ -86,7 +86,7 @@ Locales['fi'] = {
   ['m_melt_button'] = 'paina ~INPUT_PICKUP~ sulattaaksesi kivet',
 
   -- Reporter
-  ['reporter_name'] = 'san Andreas Times',
+  ['reporter_name'] = 'Uutistoimisto San Andreas Times',
   ['reporter_garage'] = 'paina ~INPUT_PICKUP~ mennäksesi alas talliin',
 
   -- Slaughterer
