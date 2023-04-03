@@ -4,12 +4,12 @@ INSERT INTO `addon_account` (name, label, shared) VALUES
 
 INSERT INTO `jobs` (name, label) VALUES
 	('slaughterer', 'Mesar'),
-	('fisherman', 'Pecaros'),
+	('fisherman', 'Pecaroš'),
 	('miner', 'Rudar'),
-	('lumberjack', 'Drvoseca'),
+	('lumberjack', 'Drvoseča'),
 	('fueler', 'Ulje'),
 	('reporter', 'Reporter'),
-	('tailor', 'Krojac')
+	('tailor', 'Krojač')
 ;
 
 INSERT INTO `job_grades` (job_name, grade, name, label, salary, skin_male, skin_female) VALUES
@@ -23,21 +23,21 @@ INSERT INTO `job_grades` (job_name, grade, name, label, salary, skin_male, skin_
 ;
 
 INSERT INTO `items` (`name`, `label`, `weight`) VALUES
-	('alive_chicken', 'Ziva Kokoska', 1),
-	('slaughtered_chicken', 'Zaklana kokoska', 1),
-	('packaged_chicken', 'Pileci file', 1),
+	('alive_chicken', 'Živa Kokoška', 1),
+	('slaughtered_chicken', 'Zaklana kokoška', 1),
+	('packaged_chicken', 'Pileći file', 1),
 	('fish', 'Riba', 1),
 	('stone', 'Kamen', 1),
 	('washed_stone', 'Oprani kamen', 1),
 	('copper', 'Bakar', 1),
-	('iron', 'Gvozdje', 1),
+	('iron', 'Gvožđe', 1),
 	('gold', 'Zlato', 1),
 	('diamond', 'Dijamant', 1),
 	('wood', 'Drvo', 1),
-	('cutted_wood', 'Iseceno drvo', 1),
+	('cutted_wood', 'Isečeno drvo', 1),
 	('packaged_plank', 'Upakovano drvo', 1),
 	('petrol', 'Ulje', 1),
-	('petrol_raffin', 'Preradjeno ulje', 1),
+	('petrol_raffin', 'Prerađeno ulje', 1),
 	('essence', 'Gas', 1),
 	('wool', 'Vuna', 1),
 	('fabric', 'Fabrika', 1),
