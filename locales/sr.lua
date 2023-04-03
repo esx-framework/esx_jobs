@@ -1,4 +1,4 @@
-Locales['en'] = {
+Locales['sr'] = {
 		-- Global menus
 		['cloakroom'] = 'Svlačionica',
 		['cloak_change'] = 'Pritisni [E] da promeniš odeću.',
