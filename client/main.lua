@@ -431,8 +431,10 @@ CreateThread(function()
 				if isInMarker and not menuIsShowed then
 					hintIsShowed = true
 					if (onDuty or zone.Type == "cloakroom") and zone.Type ~= "vehdelete" then
-						hintToDisplay = zone.Hint
-						ESX.ShowHelpNotification(hintToDisplay)
+						if zone.Hint then
+							hintToDisplay = zone.Hint
+							ESX.ShowHelpNotification(hintToDisplay)
+						end
 					elseif zone.Type == "vehdelete" and (onDuty) then
 						local playerPed = PlayerPedId()
 
