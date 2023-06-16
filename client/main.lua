@@ -1,29 +1,19 @@
-local Blips = {}
-local JobBlips = {}
-local isInMarker = false
-local hintToDisplay = "no hint to display"
-local onDuty = false
-local spawner = 0
-local myPlate = {}
+local Blips, JobBlips, isInMarker, hintToDisplay, onDuty, spawner, myPlate, vehicleObjInCaseofDrop, vehicleInCaseofDrop, vehicleMaxHealth = {}, {}, false, "no hint to display", false, 0, {}, nil, nil, nil
 
-local vehicleObjInCaseofDrop = nil
-local vehicleInCaseofDrop = nil
-
-local vehicleMaxHealth = nil
+local PlayerPedId = PlayerPedId
+local IsPedInAnyVehicle = IsPedInAnyVehicle
+local GetVehiclePedIsIn = GetVehiclePedIsIn
+local GetVehicleNumberPlateText = GetVehicleNumberPlateText
+local GetPedInVehicleSeat = GetPedInVehicleSeat
+local GetVehicleEngineHealth = GetVehicleEngineHealth
 
 RegisterNetEvent('esx:playerLoaded', function(xPlayer)
-	ESX.PlayerData = xPlayer
 	ESX.PlayerLoaded = true
 	refreshBlips()
 end)
 
 RegisterNetEvent('esx:onPlayerLogout',function()
 	ESX.PlayerLoaded = false
-	ESX.PlayerData = {}
-end)
-
-RegisterNetEvent('esx:setJob',function(job)
-	ESX.PlayerData.job = job
 end)
 
 function OpenMenu()
@@ -70,6 +60,7 @@ end
 
 AddEventHandler('esx_jobs:action', function(job, zone, zoneKey)
 	menuIsShowed = true
+	local playerJob = LocalPlayer.state.job
 	if zone.Type == "cloakroom" then
 		OpenMenu()
 	elseif zone.Type == "work" then
@@ -85,7 +76,7 @@ AddEventHandler('esx_jobs:action', function(job, zone, zoneKey)
 		local vehicle = nil
 
 		for k,v in pairs(Config.Jobs) do
-			if ESX.PlayerData.job.name == k then
+			if playerJob == k then
 				for l,w in pairs(v.Zones) do
 					if w.Type == "vehspawnpt" and w.Spawner == zone.Spawner then
 						spawnPoint = w
@@ -111,7 +102,7 @@ AddEventHandler('esx_jobs:action', function(job, zone, zoneKey)
 		local looping = true
 
 		for k,v in pairs(Config.Jobs) do
-			if ESX.PlayerData.job.name == k then
+			if playerJob == k then
 				for l,w in pairs(v.Zones) do
 					if w.Type == "vehdelete" and w.Spawner == zone.Spawner then
 						local playerPed = PlayerPedId()
@@ -181,16 +172,15 @@ AddEventHandler('esx_jobs:action', function(job, zone, zoneKey)
 end)
 
 function nextStep(gps)
-	if gps ~= 0 then
-		if Blips['delivery'] ~= nil then
-			RemoveBlip(Blips['delivery'])
-			Blips['delivery'] = nil
-		end
-
-		Blips['delivery'] = AddBlipForCoord(gps.x, gps.y, gps.z)
-		SetBlipRoute(Blips['delivery'], true)
-		ESX.ShowNotification(TranslateCap('next_point'))
+	if gps == 0 then return end
+	if Blips['delivery'] ~= nil then
+		RemoveBlip(Blips['delivery'])
+		Blips['delivery'] = nil
 	end
+
+	Blips['delivery'] = AddBlipForCoord(gps.x, gps.y, gps.z)
+	SetBlipRoute(Blips['delivery'], true)
+	ESX.ShowNotification(TranslateCap('next_point'))
 end
 
 AddEventHandler('esx_jobs:hasExitedMarker', function(zone)
@@ -219,37 +209,35 @@ end
 function refreshBlips()
 	local zones = {}
 	local blipInfo = {}
+	local playerJob = LocalPlayer.state.job
+	
+	if playerJob == nil then return end
 
-	if ESX.PlayerData.job ~= nil then
-		for jobKey,jobValues in pairs(Config.Jobs) do
-			if jobKey == ESX.PlayerData.job.name then
-				for zoneKey,zoneValues in pairs(jobValues.Zones) do
-
-					if zoneValues.Blip then
-						local _Pos = {}
-						if (zoneValues.Zone) then
-							TriggerEvent("izone:getZoneCenter", zoneValues.Zone, function(_center)
-								if (_center) then
-									_Pos = _center
-								end
-							end)
-						else
-							_Pos = zoneValues.Pos
-						end
-						local blip = AddBlipForCoord(_Pos.x, _Pos.y, _Pos.z)
-						SetBlipSprite  (blip, jobValues.BlipInfos.Sprite)
-						SetBlipDisplay (blip, 4)
-						SetBlipScale   (blip, 0.8)
-						SetBlipCategory(blip, 3)
-						SetBlipColour  (blip, jobValues.BlipInfos.Color)
-						SetBlipAsShortRange(blip, true)
-
-						BeginTextCommandSetBlipName("STRING")
-						AddTextComponentSubstringPlayerName(zoneValues.Name)
-						EndTextCommandSetBlipName(blip)
-						table.insert(JobBlips, blip)
-					end
+	for jobKey,jobValues in pairs(Config.Jobs) do
+		if jobKey == playerJob then
+			for zoneKey,zoneValues in pairs(jobValues.Zones) do
+				if not zoneValues.Blip then return end
+				local _Pos = {}
+				if not (zoneValues.Zone) then
+					_Pos = zoneValues.Pos
 				end
+				TriggerEvent("izone:getZoneCenter", zoneValues.Zone, function(_center)
+					if (_center) then
+						_Pos = _center
+					end
+				end)
+				local blip = AddBlipForCoord(_Pos.x, _Pos.y, _Pos.z)
+				SetBlipSprite  (blip, jobValues.BlipInfos.Sprite)
+				SetBlipDisplay (blip, 4)
+				SetBlipScale   (blip, 0.8)
+				SetBlipCategory(blip, 3)
+				SetBlipColour  (blip, jobValues.BlipInfos.Color)
+				SetBlipAsShortRange(blip, true)
+
+				BeginTextCommandSetBlipName("STRING")
+				AddTextComponentSubstringPlayerName(zoneValues.Name)
+				EndTextCommandSetBlipName(blip)
+				table.insert(JobBlips, blip)
 			end
 		end
 	end
@@ -279,11 +267,10 @@ RegisterNetEvent('esx_jobs:spawnJobVehicle',function(spawnPoint, vehicle)
 
 		TaskWarpPedIntoVehicle(playerPed, spawnedVehicle, -1)
 
-		if vehicle.HasCaution then
-			vehicleInCaseofDrop = spawnedVehicle
-			vehicleObjInCaseofDrop = vehicle
-			vehicleMaxHealth = GetVehicleEngineHealth(spawnedVehicle)
-		end
+		if not vehicle.HasCaution then return end
+		vehicleInCaseofDrop = spawnedVehicle
+		vehicleObjInCaseofDrop = vehicle
+		vehicleMaxHealth = GetVehicleEngineHealth(spawnedVehicle)
 	end)
 end)
 
@@ -292,10 +279,11 @@ CreateThread(function()
 	while true do
 		local Sleep = 1500
 		local zones = {}
+		local playerJob = LocalPlayer.state.job
 		
-		if ESX.PlayerData.job then
+		if playerJob then
 			for k,v in pairs(Config.Jobs) do
-				if ESX.PlayerData.job.name == k then
+				if playerJob == k then
 					Sleep = 0
 					zones = v.Zones
 				end
@@ -368,13 +356,14 @@ CreateThread(function()
 	while true do
 
 		local Sleep = 500
+		local playerJob = LocalPlayer.state.job
 
-		if ESX.PlayerData.job and ESX.PlayerData.job.name ~= 'unemployed' then
+		if playerJob and playerJob ~= 'unemployed' then
 			local zones = nil
 			local job = nil
 
 			for k,v in pairs(Config.Jobs) do
-				if ESX.PlayerData.job.name == k then
+				if playerJob == k then
 					Sleep = 0
 					job = v
 					zones = v.Zones
