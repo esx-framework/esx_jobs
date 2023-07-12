@@ -273,37 +273,42 @@ CreateThread(function()
 	while true do
 		local Sleep = 1500
 		local zones = {}
-		local playerJob = LocalPlayer.state.job.name
 
-		if playerJob then
-			for k, v in pairs(Config.Jobs) do
-				if playerJob == k then
-					Sleep = 0
-					zones = v.Zones
+		if ESX.PlayerLoaded then
+			local playerJob = LocalPlayer.state.job.name
+
+			if playerJob then
+				for k, v in pairs(Config.Jobs) do
+					if playerJob == k then
+						Sleep = 0
+						zones = v.Zones
+					end
 				end
-			end
 
-			local coords = GetEntityCoords(PlayerPedId())
-			for k, v in pairs(zones) do
-				if onDuty or v.Type == "cloakroom" then
-					if (v.Zone) then
-						TriggerEvent("izone:getZoneCenter", v.Zone, function(center)
-							if (not (center == nil)) then
-								if (v.Marker ~= -1 and #(coords - center) < Config.DrawDistance) then
-									Sleep = 0
-									DrawMarker(v.Marker, center.x, center.y, center.z - 1, 0.0, 0.0, 0.0, 0, 0.0, 0.0,
-										v.Size.x, v.Size.y, v.Size.z, v.Color.r, v.Color.g, v.Color.b, 100, false, true,
-										2, false, false, false, false)
+				local coords = GetEntityCoords(PlayerPedId())
+				for k, v in pairs(zones) do
+					if onDuty or v.Type == "cloakroom" then
+						if (v.Zone) then
+							TriggerEvent("izone:getZoneCenter", v.Zone, function(center)
+								if (not (center == nil)) then
+									if (v.Marker ~= -1 and #(coords - center) < Config.DrawDistance) then
+										Sleep = 0
+										DrawMarker(v.Marker, center.x, center.y, center.z - 1, 0.0, 0.0, 0.0, 0, 0.0, 0.0,
+											v.Size.x, v.Size.y, v.Size.z, v.Color.r, v.Color.g, v.Color.b, 100, false,
+											true,
+											2, false, false, false, false)
+									end
 								end
+							end)
+						else
+							local Pos = vector3(v.Pos.x, v.Pos.y, v.Pos.z)
+							if (v.Marker ~= -1 and #(coords - Pos) < Config.DrawDistance) then
+								Sleep = 0
+								DrawMarker(v.Marker, v.Pos.x, v.Pos.y, v.Pos.z, 0.0, 0.0, 0.0, 0, 0.0, 0.0, v.Size.x,
+									v.Size.y, v.Size.z, v.Color.r, v.Color.g, v.Color.b, 100, false, true, 2, false,
+									false,
+									false, false)
 							end
-						end)
-					else
-						local Pos = vector3(v.Pos.x, v.Pos.y, v.Pos.z)
-						if (v.Marker ~= -1 and #(coords - Pos) < Config.DrawDistance) then
-							Sleep = 0
-							DrawMarker(v.Marker, v.Pos.x, v.Pos.y, v.Pos.z, 0.0, 0.0, 0.0, 0, 0.0, 0.0, v.Size.x,
-								v.Size.y, v.Size.z, v.Color.r, v.Color.g, v.Color.b, 100, false, true, 2, false, false,
-								false, false)
 						end
 					end
 				end
@@ -354,111 +359,114 @@ end)
 CreateThread(function()
 	while true do
 		local Sleep = 500
-		local playerJob = LocalPlayer.state.job.name
 
-		if playerJob and playerJob ~= 'unemployed' then
-			local zones = nil
-			local job = nil
+		if ESX.PlayerLoaded then
+			local playerJob = LocalPlayer.state.job.name
 
-			for k, v in pairs(Config.Jobs) do
-				if playerJob == k then
-					Sleep = 0
-					job = v
-					zones = v.Zones
+			if playerJob and playerJob ~= 'unemployed' then
+				local zones = nil
+				local job = nil
+
+				for k, v in pairs(Config.Jobs) do
+					if playerJob == k then
+						Sleep = 0
+						job = v
+						zones = v.Zones
+					end
 				end
-			end
 
-			if zones then
-				local coords      = GetEntityCoords(PlayerPedId())
-				local currentZone = nil
-				local zone        = nil
-				local lastZone    = nil
+				if zones then
+					local coords      = GetEntityCoords(PlayerPedId())
+					local currentZone = nil
+					local zone        = nil
+					local lastZone    = nil
 
-				for k, v in pairs(zones) do
-					-- If we defined a zone from iZone
-					if v.Zone then
-						TriggerEvent("izone:isPlayerInZone", v.Zone, function(isIn)
-							if isIn then
+					for k, v in pairs(zones) do
+						-- If we defined a zone from iZone
+						if v.Zone then
+							TriggerEvent("izone:isPlayerInZone", v.Zone, function(isIn)
+								if isIn then
+									Sleep       = 0
+									isInMarker  = true
+									currentZone = k
+									zone        = v
+									return
+								else
+									isInMarker = false
+								end
+							end)
+							-- Because we were in a routine
+							if isInMarker then
+								break
+							end
+							-- Else use radius defined from center
+						else
+							local Pos = vector3(v.Pos.x, v.Pos.y, v.Pos.z)
+							if #(coords - Pos) < v.Size.x then
 								Sleep       = 0
 								isInMarker  = true
 								currentZone = k
 								zone        = v
-								return
+								break
 							else
 								isInMarker = false
 							end
-						end)
-						-- Because we were in a routine
-						if isInMarker then
-							break
-						end
-						-- Else use radius defined from center
-					else
-						local Pos = vector3(v.Pos.x, v.Pos.y, v.Pos.z)
-						if #(coords - Pos) < v.Size.x then
-							Sleep       = 0
-							isInMarker  = true
-							currentZone = k
-							zone        = v
-							break
-						else
-							isInMarker = false
 						end
 					end
-				end
 
-				if IsControlJustReleased(0, 38) and not menuIsShowed and isInMarker then
-					if onDuty or zone.Type == "cloakroom" then
-						TriggerEvent('esx_jobs:action', job, zone, currentZone)
-					end
-				end
-
-				-- hide or show top left zone hints
-				if isInMarker and not menuIsShowed then
-					hintIsShowed = true
-					if (onDuty or zone.Type == "cloakroom") and zone.Type ~= "vehdelete" then
-						if zone.Hint then
-							hintToDisplay = zone.Hint
-							ESX.ShowHelpNotification(hintToDisplay)
+					if IsControlJustReleased(0, 38) and not menuIsShowed and isInMarker then
+						if onDuty or zone.Type == "cloakroom" then
+							TriggerEvent('esx_jobs:action', job, zone, currentZone)
 						end
-					elseif zone.Type == "vehdelete" and (onDuty) then
-						local playerPed = PlayerPedId()
+					end
 
-						if IsPedInAnyVehicle(playerPed, false) then
-							local vehicle = GetVehiclePedIsIn(playerPed, false)
-							local driverPed = GetPedInVehicleSeat(vehicle, -1)
-							local plate = GetVehicleNumberPlateText(vehicle)
-							plate = string.gsub(plate, " ", "")
-
-							if playerPed == driverPed then
-								for i = 1, #myPlate, 1 do
-									if myPlate[i] == plate then
-										hintToDisplay = zone.Hint
-										break
-									end
-								end
-							else
-								hintToDisplay = TranslateCap('not_your_vehicle')
+					-- hide or show top left zone hints
+					if isInMarker and not menuIsShowed then
+						hintIsShowed = true
+						if (onDuty or zone.Type == "cloakroom") and zone.Type ~= "vehdelete" then
+							if zone.Hint then
+								hintToDisplay = zone.Hint
 								ESX.ShowHelpNotification(hintToDisplay)
 							end
-						else
-							hintToDisplay = TranslateCap('in_vehicle')
+						elseif zone.Type == "vehdelete" and (onDuty) then
+							local playerPed = PlayerPedId()
+
+							if IsPedInAnyVehicle(playerPed, false) then
+								local vehicle = GetVehiclePedIsIn(playerPed, false)
+								local driverPed = GetPedInVehicleSeat(vehicle, -1)
+								local plate = GetVehicleNumberPlateText(vehicle)
+								plate = string.gsub(plate, " ", "")
+
+								if playerPed == driverPed then
+									for i = 1, #myPlate, 1 do
+										if myPlate[i] == plate then
+											hintToDisplay = zone.Hint
+											break
+										end
+									end
+								else
+									hintToDisplay = TranslateCap('not_your_vehicle')
+									ESX.ShowHelpNotification(hintToDisplay)
+								end
+							else
+								hintToDisplay = TranslateCap('in_vehicle')
+								ESX.ShowHelpNotification(hintToDisplay)
+							end
+							hintIsShowed = true
+						elseif onDuty and zone.Spawner ~= spawner then
+							hintToDisplay = TranslateCap('wrong_point')
 							ESX.ShowHelpNotification(hintToDisplay)
 						end
-						hintIsShowed = true
-					elseif onDuty and zone.Spawner ~= spawner then
-						hintToDisplay = TranslateCap('wrong_point')
-						ESX.ShowHelpNotification(hintToDisplay)
 					end
-				end
 
-				if isInMarker and not hasAlreadyEnteredMarker then
-					hasAlreadyEnteredMarker = true
-				end
+					if isInMarker and not hasAlreadyEnteredMarker then
+						hasAlreadyEnteredMarker = true
+					end
 
-				if not isInMarker and hasAlreadyEnteredMarker then
-					hasAlreadyEnteredMarker = false
-					TriggerEvent('esx_jobs:hasExitedMarker', zone)
+					if not isInMarker and hasAlreadyEnteredMarker then
+						hasAlreadyEnteredMarker = false
+						TriggerEvent('esx_jobs:hasExitedMarker', zone)
+					end
 				end
 			end
 		end
