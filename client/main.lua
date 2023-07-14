@@ -185,6 +185,7 @@ AddEventHandler('esx_jobs:hasExitedMarker', function(zone)
 end)
 
 RegisterNetEvent('esx:setJob', function(job)
+	ESX.PlayerData.job = job
 	onDuty = false
 	myPlate = {} -- loosing vehicle caution in case player changes job.
 	spawner = 0
@@ -205,9 +206,8 @@ function refreshBlips()
 	local zones = {}
 	local blipInfo = {}
 	
-	if not ESX.PlayerLoaded then
-		Wait(500)
-		refreshBlips()
+	while not ESX.PlayerLoaded do
+	    Wait(500)
 	end
 
 	local playerJob = ESX.PlayerData.job.name
