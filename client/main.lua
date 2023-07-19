@@ -61,7 +61,7 @@ end
 
 AddEventHandler('esx_jobs:action', function(job, zone, zoneKey)
 	menuIsShowed = true
-	local playerJob = LocalPlayer.state.job.name
+	local playerJob = ESX.PlayerData.job.name
 	if zone.Type == "cloakroom" then
 		OpenMenu()
 	elseif zone.Type == "work" then
@@ -185,6 +185,7 @@ AddEventHandler('esx_jobs:hasExitedMarker', function(zone)
 end)
 
 RegisterNetEvent('esx:setJob', function(job)
+	ESX.PlayerData.job = job
 	onDuty = false
 	myPlate = {} -- loosing vehicle caution in case player changes job.
 	spawner = 0
@@ -204,9 +205,12 @@ end
 function refreshBlips()
 	local zones = {}
 	local blipInfo = {}
-	local playerJob = LocalPlayer.state.job.name
+	
+	while not ESX.PlayerLoaded do
+	    Wait(500)
+	end
 
-	if playerJob == nil then return end
+	local playerJob = ESX.PlayerData.job.name
 
 	for jobKey, jobValues in pairs(Config.Jobs) do
 		if jobKey == playerJob then
@@ -275,7 +279,7 @@ CreateThread(function()
 		local zones = {}
 
 		if ESX.PlayerLoaded then
-			local playerJob = LocalPlayer.state.job.name
+			local playerJob = ESX.PlayerData.job.name
 
 			if playerJob then
 				for k, v in pairs(Config.Jobs) do
@@ -361,7 +365,7 @@ CreateThread(function()
 		local Sleep = 500
 
 		if ESX.PlayerLoaded then
-			local playerJob = LocalPlayer.state.job.name
+			local playerJob = ESX.PlayerData.job.name
 
 			if playerJob and playerJob ~= 'unemployed' then
 				local zones = nil
@@ -487,4 +491,5 @@ if Config.RequestIPL then
 		RequestIpl("id2_14_during1")
 	end)
 end
+
 if ESX.PlayerLoaded then refreshBlips() end
