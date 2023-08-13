@@ -19,7 +19,7 @@ Config.Jobs.lumberjack = {
 	Zones = {
 
 		CloakRoom = {
-			Pos = {x = 1200.63, y = -1276.87, z = 34.38},
+			Pos = {x = 1200.63, y = -1276.87, z = 35.38},
 			Size  = {x = 0.8, y = 0.5, z = 1.0},
 			Color = {r = 50, g = 200, b = 50},
 			Marker= 20,
