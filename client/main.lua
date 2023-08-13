@@ -215,7 +215,7 @@ function refreshBlips()
 	for jobKey, jobValues in pairs(Config.Jobs) do
 		if jobKey == playerJob then
 			for zoneKey, zoneValues in pairs(jobValues.Zones) do
-				if not zoneValues.Blip then return end
+				if not zoneValues.Blip then goto continue end
 				local _Pos = {}
 				if not (zoneValues.Zone) then
 					_Pos = zoneValues.Pos
@@ -237,10 +237,13 @@ function refreshBlips()
 				AddTextComponentSubstringPlayerName(zoneValues.Name)
 				EndTextCommandSetBlipName(blip)
 				table.insert(JobBlips, blip)
+
+				::continue::
 			end
 		end
 	end
 end
+
 
 function spawnVehicle(spawnPoint, vehicle, vehicleCaution)
 	hintIsShowed = false
