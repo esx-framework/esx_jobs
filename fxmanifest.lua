@@ -2,7 +2,7 @@ fx_version 'adamant'
 
 game 'gta5'
 
-description 'ESX Jobs'
+description 'Provides basic Jobs For Players to RP as.'
 lua54 'yes'
 version '1.0'
 legacyversion '1.9.1'
