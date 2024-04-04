@@ -10,6 +10,7 @@ local GetVehicleEngineHealth = GetVehicleEngineHealth
 
 RegisterNetEvent('esx:playerLoaded', function(xPlayer)
 	ESX.PlayerLoaded = true
+	ESX.PlayerData = xPlayer
 	refreshBlips()
 end)
 
