@@ -210,7 +210,7 @@ function refreshBlips()
 	    Wait(500)
 	end
 
-	local playerJob = ESX.PlayerData.job.name
+	local playerJob = ESX.PlayerData.job?.name
 
 	for jobKey, jobValues in pairs(Config.Jobs) do
 		if jobKey == playerJob then
